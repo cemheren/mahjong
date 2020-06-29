@@ -10,7 +10,7 @@ client.getAvailableRooms().then(list => {
   console.error("list error", e);
 })
 
-client.joinOrCreate("my_room", {/* options */}).then(room => {
+function initRoom(room) {
   console.log("joined successfully", room);
 
   room.onMessage("chat-receive", (message) => {
@@ -19,10 +19,43 @@ client.joinOrCreate("my_room", {/* options */}).then(room => {
     document.getElementById("chathistory").appendChild(node);
   });
 
+  room.onMessage("init", (message) => {
+    message.deck.forEach(element => {
+      var node = document.createElement("div")
+      node.style.backgroundImage = `url(./imgs/${element.n}.png)`
+      node.textContent = element.n;
+      document.getElementById("mydeck").appendChild(node);
+    });
+  });
+
   current_room = room;
-}).catch(e => {
-  console.error("join error", e);
-});
+}
+
+let roomId = location.href.match(/roomId=([a-zA-Z0-9\-_]+)/);
+if (roomId && roomId[1]) {
+  roomId = roomId[1];
+
+  client.joinById(roomId).then(room => {
+    
+    initRoom(room);
+
+  }).catch(e => {
+    alert(e);
+    console.error("join error", e);
+  });;
+}else{
+
+  client.create("my_room", {/* options */}).then(room => {
+    window.history.pushState('page2', 'Playing on room', `?roomId=${room.id}`);
+    initRoom(room);
+    
+  }).catch(e => {
+    alert(e);
+    console.error("join error", e);
+  });
+}
+
+
 
 function sendChat(){
   var txt = document.getElementById("chat").value;
