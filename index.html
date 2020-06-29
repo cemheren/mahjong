@@ -1,11 +1,30 @@
 <!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="index.css">
 <html>
     <head>
         <meta charset="UTF-8">
         <title>Play mahjong</title>
     </head>
     <body>
-        <h1>Hello world</h1>
+        <div id="gamearea">
+
+            <div id=acrossdeck></div>
+            <div id=leftdeck></div>
+            <div id=rightdeck></div>
+
+            <div id="mydeck">
+
+            </div>
+        </div>
+
+        <div id="chatarea">
+            <div id="chathistory"></div>
+            <input id="chat"/>
+            <button onclick="sendChat()">Send</button>
+        </div>
+
         <footer>Akif Heren</footer>
     </body>
 </html>
+<script src="./colyseus.js"></script>
+<script src="./index.js"></script>
