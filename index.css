@@ -4,13 +4,17 @@
 }
 
 #mydeck{
+}
+
+#tiles{
     position: absolute;
     bottom: 20px;
     height: 200px;
     left: 40px;
 }
 
-#mydeck div{
+
+#mydeck #tiles div{
     height: 128px;
     width: 81px;
     float: left;

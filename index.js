@@ -10,6 +10,35 @@ client.getAvailableRooms().then(list => {
   console.error("list error", e);
 })
 
+let selectedTiles = [];
+
+function throwTile(){
+  if (selectedTiles.length != 1) {
+    alert("Need to select exactly one tile");
+  }
+
+  var currentTile = selectedTiles[0];
+  current_room.send("throwTile", { tile: currentTile.textContent });
+  selectedTiles = [];
+  var tilesElement = document.getElementById("tiles");
+  tilesElement.removeChild(currentTile);
+}
+
+function pullTile(){
+  current_room.send("pullTile", "");
+}
+
+function selectTile(event){
+  var element = event.target;
+  if (selectedTiles.includes(element)) {
+    element.style.border = 'none';
+    selectedTiles = selectedTiles.filter(item => item !== element)
+  }else{
+    element.style.border = '1px solid black';
+    selectedTiles.push(element);
+  }
+}
+
 function initRoom(room) {
   console.log("joined successfully", room);
 
@@ -19,13 +48,29 @@ function initRoom(room) {
     document.getElementById("chathistory").appendChild(node);
   });
 
+  room.onMessage("pullTile-receive", (data) => {
+    var tilesElement = document.getElementById("tiles");
+    var node = document.createElement("div")
+    node.style.backgroundImage = `url(./imgs/${data.tile}.png)`
+    node.textContent = data.tile;
+    node.onclick = selectTile;
+    tilesElement.appendChild(node);
+  });
+
   room.onMessage("init", (message) => {
+
+    var tilesElement = document.getElementById("tiles");
+    cleanElement(tilesElement);
+
     message.deck.forEach(element => {
       var node = document.createElement("div")
       node.style.backgroundImage = `url(./imgs/${element.n}.png)`
       node.textContent = element.n;
-      document.getElementById("mydeck").appendChild(node);
+      node.onclick = selectTile;
+      tilesElement.appendChild(node);
     });
+
+    Sortable.create(tilesElement, { /* options */ });
   });
 
   current_room = room;
@@ -55,10 +100,13 @@ if (roomId && roomId[1]) {
   });
 }
 
-
-
 function sendChat(){
   var txt = document.getElementById("chat").value;
   current_room.send("chat", { text: txt});
 }
 
+function cleanElement(parent){
+  while (parent.firstChild) {
+    parent.firstChild.remove();
+  }
+}
