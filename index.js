@@ -12,6 +12,37 @@ client.getAvailableRooms().then(list => {
 
 let sortable;
 let selectedTiles = [];
+let myseat;
+
+function layTiles(){
+  var selected = getSelectedTileValues();
+  current_room.send("layTiles", { tiles: selected } );
+  var tilesElement = document.getElementById("tiles");
+  var layedTilesElement = document.getElementById("mylayed");
+  for (let i = 0; i < selectedTiles.length; i++) {
+    const currentTile = selectedTiles[i];
+    tilesElement.removeChild(currentTile);
+    currentTile.style.border = 'none';
+    currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${currentTile.textContent}.png)`
+    layedTilesElement.appendChild(currentTile);
+  }
+  var space = document.createElement("div")
+  space.style.width = "40px";
+  layedTilesElement.appendChild(space);
+  selectedTiles = [];
+}
+
+function chow(){
+  layTiles();
+}
+
+function pung(){
+  layTiles();
+}
+
+function kong(){
+  layTiles();
+}
 
 function throwTile(){
   if (selectedTiles.length != 1) {
@@ -29,6 +60,10 @@ function pullTile(){
   current_room.send("pullTile", "");
 }
 
+function pickUpMidTile(){
+  current_room.send("pickUpMidTile", "");
+}
+
 function revertTo(){
   current_room.send("revertTo", 2);
 }
@@ -44,20 +79,6 @@ function selectTile(event){
   }
 }
 
-function updateSort(){
-  // sortedTiles = [];
-  // var tilesElement = document.getElementById("tiles");
-  // var child = tilesElement.firstChild;
-
-  // sortedTiles.push(child.textContent);
-
-  // while(child) {
-  //     child = child.nextSibling;
-  //     if(child)
-  //       sortedTiles.push(child.textContent);
-  // }
-}
-
 function initRoom(room) {
   console.log("joined successfully", room);
 
@@ -65,6 +86,11 @@ function initRoom(room) {
     var node = document.createElement("div")
     node.textContent = message;
     document.getElementById("chathistory").appendChild(node);
+  });
+
+  room.onMessage("clearMidTile-receive", (data) => {
+    var tileElement = document.getElementById("thrownTile");
+    cleanElement(tileElement);
   });
 
   room.onMessage("pullTile-receive", (data) => {
@@ -76,10 +102,77 @@ function initRoom(room) {
     tilesElement.appendChild(node);
   });
 
+  room.onMessage("throwTile-receive", (data) => {
+    var tileElement = document.getElementById("thrownTile");
+    var node = document.createElement("div")
+    node.style.backgroundImage = `url(./imgs/tiles_lying/${data.tile}.png)`
+    node.textContent = data.tile;
+    //node.onclick = selectTile;
+    tileElement.appendChild(node);
+  });
+
+  room.onMessage("layTiles-receive", (data) => {
+    // don't do anything if it's me. 
+    if(data.player == seat){return;}
+
+    // 3 is left, 2 is accross, 1 is right;
+    var myScreen = (data.player + 4 - seat) % 4;
+
+    if (myScreen == 1) {
+      var layedTilesElement = document.getElementById("rightlayed");
+      for (let i = 0; i < data.tiles.length; i++) {
+        var currentTile = document.createElement("div")
+        currentTile.style.border = 'none';
+        currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${data.tiles[i]}.png)`
+        layedTilesElement.appendChild(currentTile);
+      }
+      var space = document.createElement("div")
+      space.style.width = "10px";
+      layedTilesElement.appendChild(space);
+      selectedTiles = [];
+    }
+
+    if (myScreen == 3) {
+      var layedTilesElement = document.getElementById("leftlayed");
+      for (let i = 0; i < data.tiles.length; i++) {
+        var currentTile = document.createElement("div")
+        currentTile.style.border = 'none';
+        currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${data.tiles[i]}.png)`
+        layedTilesElement.appendChild(currentTile);
+      }
+      var space = document.createElement("div")
+      space.style.width = "10px";
+      layedTilesElement.appendChild(space);
+      selectedTiles = [];
+    }
+
+    if (myScreen == 2) {
+      var layedTilesElement = document.getElementById("acrosslayed");
+      for (let i = 0; i < data.tiles.length; i++) {
+        var currentTile = document.createElement("div")
+        currentTile.style.border = 'none';
+        currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${data.tiles[i]}.png)`
+        layedTilesElement.appendChild(currentTile);
+      }
+      var space = document.createElement("div")
+      space.style.width = "10px";
+      layedTilesElement.appendChild(space);
+      selectedTiles = [];
+    }
+  });
+
   room.onMessage("init", (message) => {
 
+    seat = message.seat;
+
     var tilesElement = document.getElementById("tiles");
+    var accrossDeckElement = document.getElementById("acrossdeck");
+    var leftDeckElement = document.getElementById("leftdeck");
+    var rightDeckElement = document.getElementById("rightdeck");
     cleanElement(tilesElement);
+    cleanElement(accrossDeckElement);
+    cleanElement(leftDeckElement);
+    cleanElement(rightDeckElement);
 
     if(sortable){
       message.deck.sort(function(a, b){  
@@ -95,28 +188,35 @@ function initRoom(room) {
       tilesElement.appendChild(node);
     });
 
+    // init opponents here. 
+    for (let i = 0; i < 18; i++) {
+      var node = document.createElement("div")
+      node.style.backgroundImage = `url(./imgs/b.png)`
+      // node.textContent = element.n;
+      // node.onclick = selectTile;
+      accrossDeckElement.appendChild(node);
+    }
+    for (let i = 0; i < 18; i++) {
+      var node = document.createElement("div")
+      node.style.backgroundImage = `url(./imgs/b.png)`
+      // node.textContent = element.n;
+      // node.onclick = selectTile;
+      leftDeckElement.appendChild(node);
+    }
+    for (let i = 0; i < 18; i++) {
+      var node = document.createElement("div")
+      node.style.backgroundImage = `url(./imgs/b.png)`
+      // node.textContent = element.n;
+      // node.onclick = selectTile;
+      rightDeckElement.appendChild(node);
+    }
+
     var local = Sortable.create(tilesElement, 
       { 
         onSort: function(){
           sortable = getChildValues(local.el);
-        },
-        // store: {
-        //   get: function(){
-        //     return sortable;
-        //   },
-        //   set: function (local) {
-        //     sortable = local.toArray(); 
-        //   }
-        // }
+        }
       });
-
-    // if(sortable){
-    //   //var arr = sortable.toArray();
-    //   // arr.sort(function(a, b){  
-    //   //   return sortedTiles.indexOf(a.textContent) - sortedTiles.indexOf(b.textContent);
-    //   // });
-    //   local.sort(sortable);
-    // }
   });
 
   current_room = room;
@@ -162,6 +262,16 @@ function getChildValues(parent){
   var result = [];
   for (var i = 0; i < children.length; i++) {
     var text = children[i].textContent;
+    result.push(text);
+  }
+
+  return result;
+}
+
+function getSelectedTileValues(){
+  var result = [];
+  for (var i = 0; i < selectedTiles.length; i++) {
+    var text = selectedTiles[i].textContent;
     result.push(text);
   }
 

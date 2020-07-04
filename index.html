@@ -8,20 +8,28 @@
     <body>
         <div id="gamearea">
 
-            <div id=acrossdeck></div>
-            <div id=leftdeck></div>
-            <div id=rightdeck></div>
+            <div id="acrossdeck"></div>
+            <div id="acrosslayed"></div>
+
+            <div id="leftdeck"></div>
+            <div id="leftlayed"></div>
+
+            <div id="rightdeck"></div>
+            <div id="rightlayed"></div>
+
+            <div id="thrownTile"></div>
 
             <div id="mydeck">
                 <div id="tiles"></div>
+                <div id="mylayed"></div>
 
                 <button onclick="throwTile()">Throw</button>
-                <button onclick="kong()">Kong</button>
-                <button onclick="pung()">Pung</button>
                 <button onclick="chow()">Chow</button>
-                <button onclick="pullTile()">Pull tile</button>
+                <button onclick="pung()">Pung-3</button>
+                <button onclick="kong()">Kong-4</button>
+                <button onclick="pullTile()">Pull from wall</button>
+                <button onclick="pickUpMidTile()">Pick up mid tile</button>
                 <button onclick="revertTo()">Revert 2 turns</button>
-
             </div>
         </div>
 
@@ -31,7 +39,6 @@
             <button onclick="sendChat()">Send</button>
         </div>
 
-        <footer>Akif Heren</footer>
     </body>
 </html>
 <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>

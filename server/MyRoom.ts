@@ -62,7 +62,9 @@ export class MyRoom extends Room {
         this.forceUpdate(1);
         this.forceUpdate(2);
         this.forceUpdate(3);
-      }
+
+        this.broadcast("clearMidTile-receive", {} );
+;      }
     });
 
     this.onMessage("throwTile", (client, data) => {
@@ -70,9 +72,37 @@ export class MyRoom extends Room {
       this.broadcast("chat-receive", `Player ${p1.seat} has thrown a ${data.tile}`);
 
       var deck = this.state.mahjong.removeFromDeck(p1.seat, data.tile);
+      this.state.mahjong.setMidTile(data.tile);
+      this.broadcast("throwTile-receive", {tile: data.tile});
       
       // change to custom command.
       // client.send("init", {deck: deck});
+    });
+
+    this.onMessage("pickUpMidTile", (client, data) => {
+      var p1 = this.state.players[client.sessionId];
+      
+      this.state.mahjong.saveHistory();
+      
+      var tile = this.state.mahjong.state.midTile;
+      this.broadcast("chat-receive", `Player ${p1.seat} has pulled a ${tile}`);
+      var deck = this.state.mahjong.addToDeck(p1.seat, tile);
+      
+      // change to custom command.
+      client.send("pullTile-receive", {tile: tile});
+      this.broadcast("clearMidTile-receive", {tile: tile});
+    });
+
+    this.onMessage("layTiles", (client, data) => {
+      var p1 = this.state.players[client.sessionId];
+      
+      this.state.mahjong.saveHistory();
+      
+      var tile = this.state.mahjong.addToLayedTiles(p1.seat, data.tiles);
+      this.broadcast("chat-receive", `Player ${p1.seat} layed ${data.tiles} tiles`);
+      var deck = this.state.mahjong.removeFromDeck2(p1.seat, data.tiles);
+      
+      this.broadcast("layTiles-receive", {tiles: data.tiles, player: p1.seat});
     });
   }
 
@@ -88,7 +118,7 @@ export class MyRoom extends Room {
     //console.log(`player ${at} sessionId is ${player.sessionId}`);
 
     var client = this.clients.find(client => client.sessionId == player.sessionId);
-    client.send("init", {deck: deck});
+    client.send("init", {deck: deck, seat: at});
   }
 
   onJoin (client: Client, options: any) {
@@ -104,7 +134,7 @@ export class MyRoom extends Room {
    
     this.state.seats[seat] = player;
 
-    client.send("init", {deck: deck});
+    client.send("init", {deck: deck, seat: seat});
   }
 
   onLeave (client: Client, consented: boolean) {

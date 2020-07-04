@@ -3,7 +3,98 @@
     float: right;
 }
 
+#thrownTile{
+    position: absolute;
+    top: 410px;
+    left: 720px;
+}
+
+#thrownTile div{
+    height: 70px;
+    width: 45px;
+    float: left;
+    background-size: contain;
+}
+
 #mydeck{
+}
+
+#acrossdeck{
+    position: absolute;
+    top: 60px;
+    height: 100px;
+    left: 400px;
+}
+#acrossdeck div{
+    height: 64px;
+    width: 40px;
+    float: left;
+    background-size: contain;
+}
+
+#acrosslayed{
+    position: absolute;
+    top: 140px;
+    height: 100px;
+    left: 420px;
+}
+#acrosslayed div{
+    height: 64px;
+    width: 40px;
+    float: left;
+    background-size: contain;
+}
+
+#leftdeck{
+    position: absolute;
+    top: 400px;
+    height: 50px;
+    left: 20px;
+}
+#leftdeck div{
+    height: 32px;
+    width: 20px;
+    float: left;
+    background-size: contain;
+}
+
+#leftlayed{
+    position: absolute;
+    top: 440px;
+    height: 50px;
+    left: 30px;
+}
+#leftlayed div{
+    height: 32px;
+    width: 20px;
+    float: left;
+    background-size: contain;
+}
+
+#rightdeck{
+    position: absolute;
+    top: 400px;
+    height: 100px;
+    left: 1100px;
+}
+#rightdeck div{
+    height: 32px;
+    width: 20px;
+    float: left;
+    background-size: contain;
+}
+
+#rightlayed{
+    position: absolute;
+    top: 440px;
+    height: 100px;
+    left: 1120px;
+}
+#rightlayed div{
+    height: 32px;
+    width: 20px;
+    float: left;
+    background-size: contain;
 }
 
 #tiles{
@@ -13,9 +104,23 @@
     left: 40px;
 }
 
-
 #mydeck #tiles div{
-    height: 128px;
+    height: 126px;
     width: 81px;
     float: left;
+    background-size: contain;
+}
+
+#mylayed{
+    position: absolute;
+    bottom: 270px;
+    height: 100px;
+    left: 90px;
+}
+
+#mydeck #mylayed div{
+    height: 86px;
+    width: 55px;
+    float: left;
+    background-size: contain;
 }

@@ -29,6 +29,11 @@ export class Mahjong extends Schema{
         this.state.decks[1] = this.initDeck(1);
         this.state.decks[2] = this.initDeck(2);
         this.state.decks[3] = this.initDeck(3);
+
+        this.state.layedTiles[0] = [];
+        this.state.layedTiles[1] = [];
+        this.state.layedTiles[2] = [];
+        this.state.layedTiles[3] = [];
     }
     
     saveHistory(){
@@ -43,6 +48,12 @@ export class Mahjong extends Schema{
         copy.decks[2] = this.state.decks[2].slice();
         copy.decks[3] = this.state.decks[3].slice();
         copy.draw = this.state.draw;
+        copy.midTile = this.state.midTile;
+
+        copy.layedTiles[0] = this.state.layedTiles[0].slice();
+        copy.layedTiles[1] = this.state.layedTiles[1].slice();
+        copy.layedTiles[2] = this.state.layedTiles[2].slice();
+        copy.layedTiles[3] = this.state.layedTiles[3].slice();
 
         this.history.push(copy);
         console.log(`history length: ${this.history.length}`)
@@ -65,9 +76,20 @@ export class Mahjong extends Schema{
         return true;
     }
 
+    setMidTile(tile: string){
+        var y: number = +tile;
+        this.state.midTile = y;
+    }
+
     getDeck(at: number) : Tile[] {
         if (at == 0 || at == 1 || at == 2 || at == 3 ) {
             return this.state.decks[at];
+        }
+    }
+
+    getLayedTiles(at: number) : Tile[][] {
+        if (at == 0 || at == 1 || at == 2 || at == 3 ) {
+            return this.state.layedTiles[at];
         }
     }
 
@@ -77,10 +99,7 @@ export class Mahjong extends Schema{
         }
     }
 
-    removeFromDeck(at: number, tile: number){
-        this.saveHistory();
-        
-        var deck = this.getDeck(at);
+    removeItem(deck: Tile[], tile:number){
         deck = deck.filter(item => item.n !== tile);
 
         for(var i = deck.length - 1; i >= 0; i--) {
@@ -88,6 +107,27 @@ export class Mahjong extends Schema{
                 deck.splice(i, 1);
                 break;
             }
+        }
+
+        return deck;
+    }
+
+    removeFromDeck(at: number, tile: number){
+        this.saveHistory();
+        var deck = this.getDeck(at);
+        deck = this.removeItem(deck, tile);
+
+        this.setDeck(at, deck);
+        return deck;
+    }
+
+    removeFromDeck2(at: number, tiles: string[]){
+        this.saveHistory();
+        
+        var deck = this.getDeck(at);
+        for (let i = 0; i < tiles.length; i++) {
+            const tile = +tiles[i];
+            deck = this.removeItem(deck, tile);
         }
 
         this.setDeck(at, deck);
@@ -102,6 +142,12 @@ export class Mahjong extends Schema{
 
         this.setDeck(at, deck);                
         return deck;
+    }
+
+    addToLayedTiles(at: number, tiles: string[]){
+        //this.saveHistory();
+        var layedTiles = this.getLayedTiles(at);
+        layedTiles.push(tiles.map(function(v){ return new Tile(+v); }));
     }
 
     initDeck(at: number) : Tile[] {
