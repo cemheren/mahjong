@@ -10,6 +10,7 @@ client.getAvailableRooms().then(list => {
   console.error("list error", e);
 })
 
+let sortable;
 let selectedTiles = [];
 
 function throwTile(){
@@ -28,6 +29,10 @@ function pullTile(){
   current_room.send("pullTile", "");
 }
 
+function revertTo(){
+  current_room.send("revertTo", 2);
+}
+
 function selectTile(event){
   var element = event.target;
   if (selectedTiles.includes(element)) {
@@ -39,11 +44,25 @@ function selectTile(event){
   }
 }
 
+function updateSort(){
+  // sortedTiles = [];
+  // var tilesElement = document.getElementById("tiles");
+  // var child = tilesElement.firstChild;
+
+  // sortedTiles.push(child.textContent);
+
+  // while(child) {
+  //     child = child.nextSibling;
+  //     if(child)
+  //       sortedTiles.push(child.textContent);
+  // }
+}
+
 function initRoom(room) {
   console.log("joined successfully", room);
 
   room.onMessage("chat-receive", (message) => {
-    var node =document.createElement("div")
+    var node = document.createElement("div")
     node.textContent = message;
     document.getElementById("chathistory").appendChild(node);
   });
@@ -62,6 +81,12 @@ function initRoom(room) {
     var tilesElement = document.getElementById("tiles");
     cleanElement(tilesElement);
 
+    if(sortable){
+      message.deck.sort(function(a, b){  
+        return sortable.indexOf(a.n.toString()) - sortable.indexOf(b.n.toString());
+      });
+    }
+
     message.deck.forEach(element => {
       var node = document.createElement("div")
       node.style.backgroundImage = `url(./imgs/${element.n}.png)`
@@ -70,7 +95,28 @@ function initRoom(room) {
       tilesElement.appendChild(node);
     });
 
-    Sortable.create(tilesElement, { /* options */ });
+    var local = Sortable.create(tilesElement, 
+      { 
+        onSort: function(){
+          sortable = getChildValues(local.el);
+        },
+        // store: {
+        //   get: function(){
+        //     return sortable;
+        //   },
+        //   set: function (local) {
+        //     sortable = local.toArray(); 
+        //   }
+        // }
+      });
+
+    // if(sortable){
+    //   //var arr = sortable.toArray();
+    //   // arr.sort(function(a, b){  
+    //   //   return sortedTiles.indexOf(a.textContent) - sortedTiles.indexOf(b.textContent);
+    //   // });
+    //   local.sort(sortable);
+    // }
   });
 
   current_room = room;
@@ -109,4 +155,15 @@ function cleanElement(parent){
   while (parent.firstChild) {
     parent.firstChild.remove();
   }
+}
+
+function getChildValues(parent){
+  var children = parent.children;
+  var result = [];
+  for (var i = 0; i < children.length; i++) {
+    var text = children[i].textContent;
+    result.push(text);
+  }
+
+  return result;
 }

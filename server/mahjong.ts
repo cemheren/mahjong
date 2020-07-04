@@ -1,24 +1,14 @@
 import { randomFill } from "crypto";
-import { Schema, MapSchema, type } from "@colyseus/schema";
+import { Schema, ArraySchema, type } from "@colyseus/schema";
 import { Tile } from "./tile";
+import { MahjongState } from "./mahjongstate";
 import { deepStrictEqual } from "assert";
 
 export class Mahjong extends Schema{
 
-    tiles: Tile[] = []; // the current tiles array
-    decks: {
-        0: Tile[],
-        1: Tile[],
-        2: Tile[],
-        3: Tile[]
-    } = {
-        0: null,
-        1: null,
-        2: null,
-        3: null,
-    };
-    @type("number") draw = 72; // start drawing at 72nd tile.
-
+    @type(MahjongState) state: MahjongState;
+    @type([MahjongState]) history: ArraySchema<MahjongState> = new ArraySchema<MahjongState>();
+    
     constructor() {
         super();
         // 34 * 4 = 136 tiles no seasons. 
@@ -32,28 +22,64 @@ export class Mahjong extends Schema{
         }
 
         array = this.shuffle(array);
-
-        this.tiles = array.map(value => new Tile(Math.floor(Math.random() * 34)));
+        this.state = new MahjongState();
+        this.state.tiles = array.map(value => new Tile(Math.floor(Math.random() * 34)));
         
-        this.decks[0] = this.initDeck(0);
-        this.decks[1] = this.initDeck(1);
-        this.decks[2] = this.initDeck(2);
-        this.decks[3] = this.initDeck(3);
+        this.state.decks[0] = this.initDeck(0);
+        this.state.decks[1] = this.initDeck(1);
+        this.state.decks[2] = this.initDeck(2);
+        this.state.decks[3] = this.initDeck(3);
     }
     
+    saveHistory(){
+        console.log("saveHistory()")
+        if(this.history.length > 5){
+            this.history.shift();
+        }
+        var copy = new MahjongState();
+        copy.tiles = this.state.tiles;
+        copy.decks[0] = this.state.decks[0].slice();
+        copy.decks[1] = this.state.decks[1].slice();
+        copy.decks[2] = this.state.decks[2].slice();
+        copy.decks[3] = this.state.decks[3].slice();
+        copy.draw = this.state.draw;
+
+        this.history.push(copy);
+        console.log(`history length: ${this.history.length}`)
+    }
+
+    loadHistory(minus: number){
+        console.log(`loadHistory(${minus})`)
+        
+        if(minus > 5 || this.history.length == 0){
+            return false;
+        }
+        
+        console.log(`history length: ${this.history.length}`)
+        var originalLength = this.history.length;
+        for (let i = 0; i < originalLength && i <= minus; i++) {
+            var old = this.history.pop();     
+            this.state = old;
+        }
+
+        return true;
+    }
+
     getDeck(at: number) : Tile[] {
         if (at == 0 || at == 1 || at == 2 || at == 3 ) {
-            return this.decks[at];
+            return this.state.decks[at];
         }
     }
 
     setDeck(at: number, tiles: Tile[]) {
         if (at == 0 || at == 1 || at == 2 || at == 3 ) {
-            this.decks[at] = tiles;
+            this.state.decks[at] = tiles;
         }
     }
 
     removeFromDeck(at: number, tile: number){
+        this.saveHistory();
+        
         var deck = this.getDeck(at);
         deck = deck.filter(item => item.n !== tile);
 
@@ -65,17 +91,16 @@ export class Mahjong extends Schema{
         }
 
         this.setDeck(at, deck);
-
         return deck;
     }
 
     addToDeck(at: number, tile: number){
+        //this.saveHistory();
         var deck = this.getDeck(at);
 
         deck.push(new Tile(tile));
 
-        this.setDeck(at, deck);        
-
+        this.setDeck(at, deck);                
         return deck;
     }
 
@@ -83,13 +108,14 @@ export class Mahjong extends Schema{
         // each deck is 18 tiles. 
         // at should be 0 to 3.
         
-        var current = this.tiles.slice(at * 18, (at+1) * 18);
+        var current = this.state.tiles.slice(at * 18, (at+1) * 18);
         return current;
     }
 
     drawTile() : Tile {
-        var current = this.tiles[this.draw];
-        this.draw++;
+        //this.saveHistory();
+        var current = this.state.tiles[this.state.draw];
+        this.state.draw++;
 
         return current;
     }
