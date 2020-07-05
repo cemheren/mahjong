@@ -128,6 +128,7 @@ export class MyRoom extends Room {
 
     var seat = this.getFirstEmptySeat();
     var deck = this.state.mahjong.getDeck(seat);
+    var layedTiles = this.state.mahjong.getLayedTiles(seat);
     
     var player = new Player(deck, seat, client.sessionId);
     this.state.players[client.sessionId] = player;

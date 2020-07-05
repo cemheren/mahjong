@@ -1,4 +1,4 @@
-import http from "http";
+import https from "https";
 import express from "express";
 import cors from "cors";
 import { Server } from "colyseus";
@@ -13,7 +13,7 @@ const app = express()
 app.use(cors());
 app.use(express.json())
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 const gameServer = new Server({
   server,
 });

@@ -124,3 +124,9 @@
     float: left;
     background-size: contain;
 }
+
+#info{
+    position: absolute;
+    bottom: 4px;
+    left: 100px
+}
