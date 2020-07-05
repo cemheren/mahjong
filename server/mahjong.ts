@@ -151,10 +151,10 @@ export class Mahjong extends Schema{
     }
 
     initDeck(at: number) : Tile[] {
-        // each deck is 18 tiles. 
+        // each deck is 13 tiles. 
         // at should be 0 to 3.
         
-        var current = this.state.tiles.slice(at * 18, (at+1) * 18);
+        var current = this.state.tiles.slice(at * 13, (at+1) * 13);
         return current;
     }
 

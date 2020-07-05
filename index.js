@@ -130,17 +130,17 @@ function initRoom(room) {
         sumOfTiles += tiles.length;
         if (myScreen == 1) {
           addLayedTilesToRight(tiles);
-          redrawRight(18 - sumOfTiles);
+          redrawRight(13 - sumOfTiles);
         }
 
         if (myScreen == 3) {
           addLayedTilesToLeft(tiles);
-          redrawLeft(18 - sumOfTiles);
+          redrawLeft(13 - sumOfTiles);
         }
 
         if (myScreen == 2) {
           addLayedTilesToAcross(tiles);
-          redrawAccross(18 - sumOfTiles);
+          redrawAccross(13 - sumOfTiles);
         }
 
         if (myScreen == 0) {
@@ -203,9 +203,9 @@ function initRoom(room) {
       tilesElement.appendChild(node);
     });
 
-    redrawAccross(18);
-    redrawLeft(18);
-    redrawRight(18);
+    redrawAccross(13);
+    redrawLeft(13);
+    redrawRight(13);
 
     var local = Sortable.create(tilesElement, 
       { 

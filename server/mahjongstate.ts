@@ -17,7 +17,7 @@ export class MahjongState extends Schema{
         2: null,
         3: null,
     };
-    @type("number") draw = 72; // start drawing at 72nd tile.
+    @type("number") draw = 52; // start drawing at 72nd tile.
     @type("number") midTile: number;
     layedTiles:{
         0: Tile[][],
