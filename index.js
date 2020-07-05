@@ -1,8 +1,8 @@
 //import Colyseus from "colyseus.js";
 //import { Colyseus } from './colyseus.js';
 
-//let client = new Colyseus.Client("ws://localhost:2567"); //https://cemherenmahjong.azurewebsites.net
-let client = new Colyseus.Client("wss://cemherenmahjong.azurewebsites.net"); //
+let client = new Colyseus.Client("ws://localhost:2567"); //https://cemherenmahjong.azurewebsites.net
+//let client = new Colyseus.Client("wss://cemherenmahjong.azurewebsites.net"); //
 let current_room;
 
 client.getAvailableRooms().then(list => {
