@@ -1,7 +1,7 @@
 //import Colyseus from "colyseus.js";
 //import { Colyseus } from './colyseus.js';
 
-const endpoint = (window.location.hostname.indexOf("github") === -1)
+const endpoint = (window.location.hostname.indexOf("mahjonglab") === -1)
   ? "ws://localhost:2567" // development (local)
   : "ws://mahjong.westus.azurecontainer.io:2567" // production (remote)
 
