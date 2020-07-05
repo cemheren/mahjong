@@ -21,6 +21,7 @@ let myseat;
 function layTiles(){
   var selected = getSelectedTileValues();
   current_room.send("layTiles", { tiles: selected } );
+
   var tilesElement = document.getElementById("tiles");
   var layedTilesElement = document.getElementById("mylayed");
   for (let i = 0; i < selectedTiles.length; i++) {
@@ -115,6 +116,41 @@ function initRoom(room) {
     tileElement.appendChild(node);
   });
 
+  room.onMessage("layTilesInit-receive", (data) => {
+    clearLayedTiles();
+    data = data.data;
+
+    for (let i = 0; i < data.length; i++) {
+      const tilesArray = data[i].tiles;
+      var sumOfTiles = 0;
+      for (let j = 0; j < tilesArray.length; j++) {
+        const tiles = tilesArray[j];
+        var myScreen = (i + 4 - seat) % 4;
+
+        sumOfTiles += tiles.length;
+        if (myScreen == 1) {
+          addLayedTilesToRight(tiles);
+          redrawRight(18 - sumOfTiles);
+        }
+
+        if (myScreen == 3) {
+          addLayedTilesToLeft(tiles);
+          redrawLeft(18 - sumOfTiles);
+        }
+
+        if (myScreen == 2) {
+          addLayedTilesToAcross(tiles);
+          redrawAccross(18 - sumOfTiles);
+        }
+
+        if (myScreen == 0) {
+          updateSelfLayedTiles(tiles);
+        }
+      }
+    }
+
+  });
+
   room.onMessage("layTiles-receive", (data) => {
     // don't do anything if it's me. 
     if(data.player == seat){return;}
@@ -123,45 +159,24 @@ function initRoom(room) {
     var myScreen = (data.player + 4 - seat) % 4;
 
     if (myScreen == 1) {
-      var layedTilesElement = document.getElementById("rightlayed");
-      for (let i = 0; i < data.tiles.length; i++) {
-        var currentTile = document.createElement("div")
-        currentTile.style.border = 'none';
-        currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${data.tiles[i]}.png)`
-        layedTilesElement.appendChild(currentTile);
-      }
-      var space = document.createElement("div")
-      space.style.width = "10px";
-      layedTilesElement.appendChild(space);
-      selectedTiles = [];
+      addLayedTilesToRight(data.tiles);
+      var deckElement = document.getElementById("rightdeck");
+      var children = getChildValues(deckElement)
+      redrawRight(children.length - data.tiles.length);
     }
 
     if (myScreen == 3) {
-      var layedTilesElement = document.getElementById("leftlayed");
-      for (let i = 0; i < data.tiles.length; i++) {
-        var currentTile = document.createElement("div")
-        currentTile.style.border = 'none';
-        currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${data.tiles[i]}.png)`
-        layedTilesElement.appendChild(currentTile);
-      }
-      var space = document.createElement("div")
-      space.style.width = "10px";
-      layedTilesElement.appendChild(space);
-      selectedTiles = [];
+      addLayedTilesToLeft(data.tiles);
+      var deckElement = document.getElementById("leftdeck");
+      var children = getChildValues(deckElement)
+      redrawLeft(children.length - data.tiles.length);
     }
 
     if (myScreen == 2) {
-      var layedTilesElement = document.getElementById("acrosslayed");
-      for (let i = 0; i < data.tiles.length; i++) {
-        var currentTile = document.createElement("div")
-        currentTile.style.border = 'none';
-        currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${data.tiles[i]}.png)`
-        layedTilesElement.appendChild(currentTile);
-      }
-      var space = document.createElement("div")
-      space.style.width = "10px";
-      layedTilesElement.appendChild(space);
-      selectedTiles = [];
+      addLayedTilesToAcross(data.tiles);
+      var deckElement = document.getElementById("acrossdeck");
+      var children = getChildValues(deckElement)
+      redrawAccross(children.length - data.tiles.length);
     }
   });
 
@@ -172,13 +187,7 @@ function initRoom(room) {
     infoElement.textContent = `You are player ${seat}`;
 
     var tilesElement = document.getElementById("tiles");
-    var accrossDeckElement = document.getElementById("acrossdeck");
-    var leftDeckElement = document.getElementById("leftdeck");
-    var rightDeckElement = document.getElementById("rightdeck");
     cleanElement(tilesElement);
-    cleanElement(accrossDeckElement);
-    cleanElement(leftDeckElement);
-    cleanElement(rightDeckElement);
 
     if(sortable){
       message.deck.sort(function(a, b){  
@@ -194,28 +203,9 @@ function initRoom(room) {
       tilesElement.appendChild(node);
     });
 
-    // init opponents here. 
-    for (let i = 0; i < 18; i++) {
-      var node = document.createElement("div")
-      node.style.backgroundImage = `url(./imgs/b.png)`
-      // node.textContent = element.n;
-      // node.onclick = selectTile;
-      accrossDeckElement.appendChild(node);
-    }
-    for (let i = 0; i < 18; i++) {
-      var node = document.createElement("div")
-      node.style.backgroundImage = `url(./imgs/b.png)`
-      // node.textContent = element.n;
-      // node.onclick = selectTile;
-      leftDeckElement.appendChild(node);
-    }
-    for (let i = 0; i < 18; i++) {
-      var node = document.createElement("div")
-      node.style.backgroundImage = `url(./imgs/b.png)`
-      // node.textContent = element.n;
-      // node.onclick = selectTile;
-      rightDeckElement.appendChild(node);
-    }
+    redrawAccross(18);
+    redrawLeft(18);
+    redrawRight(18);
 
     var local = Sortable.create(tilesElement, 
       { 
@@ -255,31 +245,4 @@ if (roomId && roomId[1]) {
 function sendChat(){
   var txt = document.getElementById("chat").value;
   current_room.send("chat", { text: txt});
-}
-
-function cleanElement(parent){
-  while (parent.firstChild) {
-    parent.firstChild.remove();
-  }
-}
-
-function getChildValues(parent){
-  var children = parent.children;
-  var result = [];
-  for (var i = 0; i < children.length; i++) {
-    var text = children[i].textContent;
-    result.push(text);
-  }
-
-  return result;
-}
-
-function getSelectedTileValues(){
-  var result = [];
-  for (var i = 0; i < selectedTiles.length; i++) {
-    var text = selectedTiles[i].textContent;
-    result.push(text);
-  }
-
-  return result;
 }

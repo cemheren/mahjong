@@ -64,7 +64,8 @@ export class MyRoom extends Room {
         this.forceUpdate(3);
 
         this.broadcast("clearMidTile-receive", {} );
-;      }
+        this.sendLayedTilesInit();
+      }
     });
 
     this.onMessage("throwTile", (client, data) => {
@@ -106,6 +107,22 @@ export class MyRoom extends Room {
     });
   }
 
+  sendLayedTilesInit(){
+
+    var zerosTiles = this.state.mahjong.getLayedTiles(0);
+    var onesTiles = this.state.mahjong.getLayedTiles(1);
+    var twosTiles = this.state.mahjong.getLayedTiles(2);
+    var threesTiles = this.state.mahjong.getLayedTiles(3);
+
+    this.broadcast("layTilesInit-receive", {
+      data : [
+        {tiles: zerosTiles, player: 0},
+        {tiles: onesTiles, player: 1},
+        {tiles: twosTiles, player: 2},
+        {tiles: threesTiles, player: 3},
+      ]});
+  }
+
   forceUpdate(at: number){
     var deck = this.state.mahjong.getDeck(at);
     var player = this.state.seats[at];
@@ -128,7 +145,6 @@ export class MyRoom extends Room {
 
     var seat = this.getFirstEmptySeat();
     var deck = this.state.mahjong.getDeck(seat);
-    var layedTiles = this.state.mahjong.getLayedTiles(seat);
     
     var player = new Player(deck, seat, client.sessionId);
     this.state.players[client.sessionId] = player;
@@ -136,6 +152,7 @@ export class MyRoom extends Room {
     this.state.seats[seat] = player;
 
     client.send("init", {deck: deck, seat: seat});
+    this.sendLayedTilesInit();
   }
 
   onLeave (client: Client, consented: boolean) {
