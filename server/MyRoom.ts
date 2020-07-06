@@ -42,6 +42,12 @@ export class MyRoom extends Room {
       this.state.mahjong.saveHistory();
       
       var tile = this.state.mahjong.drawTile();
+
+      if (tile == undefined) {
+        this.broadcast("chat-receive", `The wall has no more tiles.`);
+        return;      
+      }
+
       this.broadcast("chat-receive", `Player ${p1.seat} has pulled a ${tile.n}`);
       var deck = this.state.mahjong.addToDeck(p1.seat, tile.n);
       

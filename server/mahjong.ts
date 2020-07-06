@@ -14,7 +14,7 @@ export class Mahjong extends Schema{
         // 34 * 4 = 136 tiles no seasons. 
         var array: number[] = [];
 
-        for (let i = 0; i < 136; i = i + 4) {
+        for (let i = 0; i < 34; i++) {
             array.push(i);  
             array.push(i);  
             array.push(i);  
@@ -23,7 +23,7 @@ export class Mahjong extends Schema{
 
         array = this.shuffle(array);
         this.state = new MahjongState();
-        this.state.tiles = array.map(value => new Tile(Math.floor(Math.random() * 34)));
+        this.state.tiles = array.map(value => new Tile(value));
         
         this.state.decks[0] = this.initDeck(0);
         this.state.decks[1] = this.initDeck(1);
@@ -122,7 +122,7 @@ export class Mahjong extends Schema{
     }
 
     removeFromDeck2(at: number, tiles: string[]){
-        this.saveHistory();
+        //this.saveHistory();
         
         var deck = this.getDeck(at);
         for (let i = 0; i < tiles.length; i++) {

@@ -1,12 +1,23 @@
 #chatarea{
     right: 0;
     float: right;
+    height: 700px;
+    width: 210px;
+}
+
+#chathistory{
+    right: 0;
+    float: right;
+    height: 600px;
+    overflow: scroll;
 }
 
 #thrownTile{
     position: absolute;
-    top: 410px;
-    left: 720px;
+    top: 310px;
+    left: 420px;
+    height: 300px;
+    width: 580px;
 }
 
 #thrownTile div{
@@ -109,6 +120,7 @@
     width: 81px;
     float: left;
     background-size: contain;
+    position: relative;
 }
 
 #mylayed{
@@ -129,4 +141,10 @@
     position: absolute;
     bottom: 4px;
     left: 100px
+}
+
+#gameplaybuttons{
+    position: absolute;
+    bottom: 35px;
+    left: 50px
 }

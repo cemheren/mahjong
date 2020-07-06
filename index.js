@@ -20,6 +20,11 @@ let myseat;
 
 function layTiles(){
   var selected = getSelectedTileValues();
+
+  if (selected.length < 2) {
+    alert("Please select at least 2 tiles");
+  }
+
   current_room.send("layTiles", { tiles: selected } );
 
   var tilesElement = document.getElementById("tiles");
@@ -28,6 +33,7 @@ function layTiles(){
     const currentTile = selectedTiles[i];
     tilesElement.removeChild(currentTile);
     currentTile.style.border = 'none';
+    currentTile.style.top = "0px";
     currentTile.style.backgroundImage = `url(./imgs/tiles_lying/${currentTile.textContent}.png)`
     layedTilesElement.appendChild(currentTile);
   }
@@ -76,10 +82,12 @@ function revertTo(){
 function selectTile(event){
   var element = event.target;
   if (selectedTiles.includes(element)) {
-    element.style.border = 'none';
+    //element.style.border = 'none';
+    element.style.top = "0px";
     selectedTiles = selectedTiles.filter(item => item !== element)
   }else{
-    element.style.border = '1px solid black';
+    //element.style.border = '1px solid black';
+    element.style.top = "-10px";
     selectedTiles.push(element);
   }
 }
@@ -90,12 +98,16 @@ function initRoom(room) {
   room.onMessage("chat-receive", (message) => {
     var node = document.createElement("div")
     node.textContent = message;
-    document.getElementById("chathistory").appendChild(node);
+    var div = document.getElementById("chathistory")
+    div.appendChild(node);
+    div.scrollTop = div.scrollHeight;
   });
 
   room.onMessage("clearMidTile-receive", (data) => {
     var tileElement = document.getElementById("thrownTile");
-    cleanElement(tileElement);
+    //cleanElement(tileElement);
+    if(tileElement.lastChild)
+      tileElement.removeChild();
   });
 
   room.onMessage("pullTile-receive", (data) => {
