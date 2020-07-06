@@ -107,7 +107,7 @@ function initRoom(room) {
     var tileElement = document.getElementById("thrownTile");
     //cleanElement(tileElement);
     if(tileElement.lastChild)
-      tileElement.removeChild();
+      tileElement.removeChild(tileElement.lastChild);
   });
 
   room.onMessage("pullTile-receive", (data) => {
