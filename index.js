@@ -76,7 +76,7 @@ function pickUpMidTile(){
 }
 
 function revertTo(){
-  current_room.send("revertTo", 2);
+  current_room.send("revertTo", 1);
 }
 
 function selectTile(event){
@@ -200,7 +200,7 @@ function initRoom(room) {
 
     var tilesElement = document.getElementById("tiles");
     cleanElement(tilesElement);
-
+    
     if(sortable){
       message.deck.sort(function(a, b){  
         return sortable.indexOf(a.n.toString()) - sortable.indexOf(b.n.toString());

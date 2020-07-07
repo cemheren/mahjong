@@ -78,23 +78,31 @@ export class MyRoom extends Room {
       var p1 = this.state.players[client.sessionId];
       this.broadcast("chat-receive", `Player ${p1.seat} has thrown a ${data.tile}`);
 
+      this.state.mahjong.saveHistory();
+
       var deck = this.state.mahjong.removeFromDeck(p1.seat, data.tile);
       this.state.mahjong.setMidTile(data.tile);
       this.broadcast("throwTile-receive", {tile: data.tile});
       
-      // change to custom command.
-      // client.send("init", {deck: deck});
     });
 
     this.onMessage("pickUpMidTile", (client, data) => {
       var p1 = this.state.players[client.sessionId];
       
+      var tile = this.state.mahjong.state.midTile;
+
+      if (tile == -1) {
+        this.broadcast("chat-receive", `No pickable mid tile`);
+        return;
+      }
+
       this.state.mahjong.saveHistory();
       
-      var tile = this.state.mahjong.state.midTile;
       this.broadcast("chat-receive", `Player ${p1.seat} has pulled a ${tile}`);
       var deck = this.state.mahjong.addToDeck(p1.seat, tile);
       
+      this.state.mahjong.setMidTile(null);
+
       // change to custom command.
       client.send("pullTile-receive", {tile: tile});
       this.broadcast("clearMidTile-receive", {tile: tile});
