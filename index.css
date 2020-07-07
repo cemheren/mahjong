@@ -14,15 +14,15 @@
 
 #thrownTile{
     position: absolute;
-    top: 310px;
+    top: 260px;
     left: 420px;
     height: 300px;
     width: 580px;
 }
 
 #thrownTile div{
-    height: 70px;
-    width: 45px;
+    height: 60px;
+    width: 38px;
     float: left;
     background-size: contain;
 }
