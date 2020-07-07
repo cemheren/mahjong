@@ -48,7 +48,7 @@ export class MyRoom extends Room {
         return;      
       }
 
-      this.broadcast("chat-receive", `Player ${p1.seat} has pulled a ${tile.n}`);
+      this.broadcast("chat-receive", `Player ${p1.seat} has pulled from wall`);
       var deck = this.state.mahjong.addToDeck(p1.seat, tile.n);
       
       // change to custom command.
