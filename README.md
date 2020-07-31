@@ -16,3 +16,6 @@ Other game mechanics like pulling from middle or the wall are supported. You can
 
 Scoring is left to the players as many people play with simplified scoring. 
 
+<p align="center">
+  <img src="https://github.com/cemheren/mahjong/blob/master/mahjonglab.com__roomId%3D3TO7lXHOT.png" width="1200">
+</p>
